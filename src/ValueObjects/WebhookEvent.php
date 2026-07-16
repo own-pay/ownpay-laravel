@@ -12,12 +12,6 @@ namespace OwnPay\Laravel\ValueObjects;
  */
 enum WebhookEvent: string
 {
-    case PaymentCompleted = 'payment.completed';
-    case PaymentFailed = 'payment.failed';
-    case PaymentCancelled = 'payment.canceled';
-    case RefundCompleted = 'refund.completed';
-    case DisputeCreated = 'dispute.created';
-
     /**
      * Get a human-readable label for the event.
      */
@@ -59,4 +53,9 @@ enum WebhookEvent: string
     {
         return $this === self::DisputeCreated;
     }
+    case PaymentCompleted = 'payment.completed';
+    case PaymentFailed = 'payment.failed';
+    case PaymentCancelled = 'payment.canceled';
+    case RefundCompleted = 'refund.completed';
+    case DisputeCreated = 'dispute.created';
 }

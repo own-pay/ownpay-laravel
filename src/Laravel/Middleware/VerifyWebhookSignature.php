@@ -35,7 +35,6 @@ class VerifyWebhookSignature
      *
      * @param  Request  $request  The incoming request.
      * @param  Closure(Request): Response  $next  The next middleware.
-     * @return Response|JsonResponse
      */
     public function handle(Request $request, Closure $next): Response|JsonResponse
     {

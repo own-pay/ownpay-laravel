@@ -2,9 +2,10 @@
 
 All notable changes to `ownpay-laravel` will be documented in this file.
 
-## 1.0.0 - 2024-01-01
+## 1.0.0 - 2026-07-16
 
 ### Added
+
 - Initial release
 - Payment creation and retrieval
 - Transaction listing and filtering

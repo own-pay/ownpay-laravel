@@ -2,7 +2,8 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/ownpay/ownpay-laravel.svg?style=flat-square)](https://packagist.org/packages/ownpay/ownpay-laravel)
 [![Total Downloads](https://img.shields.io/packagist/dt/ownpay/ownpay-laravel.svg?style=flat-square)](https://packagist.org/packages/ownpay/ownpay-laravel)
-[![License](https://img.shields.io/packagist/l/ownpay/ownpay-laravel.svg?style=flat-square)](https://github.com/own-pay/ownpay-laravel/blob/main/LICENSE)
+[![License](https://img.shields.io/packagist/l/ownpay/ownpay-laravel.svg?style=flat-square)](https://github.com/own-pay/ownpay-laravel/blob/main/LICENSE) 
+
 Official Laravel SDK for the [OwnPay](https://ownpay.org) payment gateway platform. This package provides a clean, fluent interface for integrating OwnPay payments into your Laravel application.
 
 ## Features

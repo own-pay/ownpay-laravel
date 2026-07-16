@@ -1,0 +1,70 @@
+{
+  "name": "ownpay/ownpay-laravel",
+  "description": "Official OwnPay Payment Gateway SDK for Laravel",
+  "type": "library",
+  "license": "MIT",
+  "keywords": [
+    "payment",
+    "gateway",
+    "laravel",
+    "ownpay",
+    "fintech"
+  ],
+  "homepage": "https://github.com/own-pay/ownpay-laravel",
+  "authors": [
+    {
+      "name": "OwnPay Team",
+      "email": "dev@ownpay.org",
+      "homepage": "https://ownpay.org"
+    }
+  ],
+  "require": {
+    "php": "^8.3",
+    "illuminate/support": "^11.0|^12.0|^13.0",
+    "illuminate/http": "^11.0|^12.0|^13.0",
+    "illuminate/config": "^11.0|^12.0|^13.0",
+    "illuminate/contracts": "^11.0|^12.0|^13.0",
+    "psr/log": "^3.0"
+  },
+  "require-dev": {
+    "orchestra/testbench": "^9.0|^10.0",
+    "phpunit/phpunit": "^11.0",
+    "larastan/larastan": "^3.0",
+    "laravel/pint": "^1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "OwnPay\\Laravel\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "OwnPay\\Laravel\\Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "OwnPay\\Laravel\\OwnPayServiceProvider"
+      ],
+      "aliases": {
+        "OwnPay": "OwnPay\\Laravel\\Facades\\OwnPay"
+      }
+    }
+  },
+  "config": {
+    "sort-packages": true,
+    "preferred-install": "dist",
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true,
+  "scripts": {
+    "test": "vendor/bin/phpunit",
+    "test:coverage": "XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-html coverage",
+    "analyse": "vendor/bin/phpstan analyse",
+    "format": "vendor/bin/pint"
+  }
+}

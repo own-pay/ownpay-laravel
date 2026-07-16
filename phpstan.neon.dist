@@ -1,0 +1,18 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - src/
+
+    level: 8
+
+    ignoreErrors:
+        - '#Call to an undefined method Illuminate\\Support\\Facades\\#'
+
+    checkMissingIterableValueType: true
+
+    reportUnmatchedIgnoredErrors: true
+
+    excludePaths:
+        - tests/*

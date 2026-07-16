@@ -1,0 +1,60 @@
+{
+    "payment_completed": {
+        "event": "payment.completed",
+        "transaction_id": "OP-12345678",
+        "gateway_trx_id": "gw_abc123",
+        "amount": "1250.00",
+        "currency": "BDT",
+        "fee": "25.00",
+        "gateway": "bkash",
+        "gateway_type": "api",
+        "status": "completed",
+        "customer": {
+            "name": "John Doe",
+            "email": "john@example.com",
+            "phone": "+8801700000000"
+        },
+        "metadata": {
+            "order_id": "ORD-12345"
+        },
+        "timestamp": "2026-05-21T02:45:00+06:00"
+    },
+    "payment_failed": {
+        "event": "payment.failed",
+        "transaction_id": "OP-87654321",
+        "gateway_trx_id": "gw_xyz789",
+        "amount": "500.00",
+        "currency": "BDT",
+        "fee": "0.00",
+        "gateway": "bkash",
+        "gateway_type": "api",
+        "status": "failed",
+        "customer": {
+            "name": "Jane Doe",
+            "email": "jane@example.com",
+            "phone": "+8801800000000"
+        },
+        "metadata": {},
+        "timestamp": "2026-05-21T03:00:00+06:00"
+    },
+    "refund_completed": {
+        "event": "refund.completed",
+        "transaction_id": "OP-12345678",
+        "gateway_trx_id": "gw_abc123",
+        "amount": "500.00",
+        "currency": "BDT",
+        "fee": "10.00",
+        "gateway": "bkash",
+        "gateway_type": "api",
+        "status": "completed",
+        "customer": {
+            "name": "John Doe",
+            "email": "john@example.com",
+            "phone": "+8801700000000"
+        },
+        "metadata": {
+            "refund_reason": "Customer request"
+        },
+        "timestamp": "2026-05-21T04:00:00+06:00"
+    }
+}

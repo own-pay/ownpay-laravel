@@ -12,6 +12,13 @@ namespace OwnPay\Laravel\ValueObjects;
  */
 enum PaymentStatus: string
 {
+    case Pending = 'pending';
+    case Processing = 'processing';
+    case Completed = 'completed';
+    case Failed = 'failed';
+    case Cancelled = 'cancelled';
+    case Expired = 'expired';
+
     /**
      * Check if the status is a terminal state.
      *
@@ -60,10 +67,4 @@ enum PaymentStatus: string
             self::Expired => 'Expired',
         };
     }
-    case Pending = 'pending';
-    case Processing = 'processing';
-    case Completed = 'completed';
-    case Failed = 'failed';
-    case Cancelled = 'cancelled';
-    case Expired = 'expired';
 }

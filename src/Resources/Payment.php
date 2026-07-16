@@ -125,7 +125,7 @@ final readonly class Payment
             paymentId: is_scalar($paymentId) ? (string) $paymentId : '',
             token: is_scalar($token) ? (string) $token : '',
             checkoutUrl: is_scalar($checkoutUrl) ? (string) $checkoutUrl : '',
-            status: PaymentStatus::from(is_scalar($status) ? (string) $status : 'pending'),
+            status: PaymentStatus::tryFrom(is_scalar($status) ? (string) $status : 'pending') ?? PaymentStatus::Pending,
             trxId: is_scalar($trxId) ? (string) $trxId : null,
             gatewayTrxId: is_scalar($gatewayTrxId) ? (string) $gatewayTrxId : null,
             amount: is_scalar($amount) ? (string) $amount : null,

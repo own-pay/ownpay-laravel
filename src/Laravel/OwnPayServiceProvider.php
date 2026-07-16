@@ -89,14 +89,17 @@ class OwnPayServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Load routes
+        $this->loadRoutesFrom(__DIR__.'/../../routes/web.php');
+
         // Publish configuration
         if ($this->app->runningInConsole()) {
             $this->publishes([
                 __DIR__.'/../../config/ownpay.php' => config_path('ownpay.php'),
             ], 'ownpay-config');
 
-            // Publish migrations
-            $this->publishes([
+            // Publish migrations (uses publishesMigrations for timestamp renaming)
+            $this->publishesMigrations([
                 __DIR__.'/../../database/migrations' => database_path('migrations'),
             ], 'ownpay-migrations');
 

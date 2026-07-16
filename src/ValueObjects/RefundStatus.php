@@ -12,6 +12,10 @@ namespace OwnPay\Laravel\ValueObjects;
  */
 enum RefundStatus: string
 {
+    case Pending = 'pending';
+    case Completed = 'completed';
+    case Failed = 'failed';
+
     /**
      * Check if the status is a terminal state.
      */
@@ -42,7 +46,4 @@ enum RefundStatus: string
             self::Failed => 'Failed',
         };
     }
-    case Pending = 'pending';
-    case Completed = 'completed';
-    case Failed = 'failed';
 }

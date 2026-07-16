@@ -10,7 +10,7 @@ namespace OwnPay\Laravel\Http;
  * Provides a convenient interface for working with API responses,
  * including JSON parsing, status checking, and error extraction.
  */
-final readonly class Response
+final readonly class Response implements \JsonSerializable
 {
     /**
      * Create a new Response.

@@ -67,9 +67,8 @@ final readonly class Money
             throw new \InvalidArgumentException("Cents must be non-negative, got: {$cents}");
         }
 
-        $divisor = pow(10, $decimalPlaces);
-
-        $formatted = number_format($cents / $divisor, $decimalPlaces, '.', '');
+        /** @var numeric-string $formatted */
+        $formatted = bcdiv((string) $cents, (string) pow(10, $decimalPlaces), $decimalPlaces);
 
         return new self($formatted, strtoupper($currency));
     }

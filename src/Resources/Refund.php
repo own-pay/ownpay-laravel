@@ -91,7 +91,7 @@ final readonly class Refund
             gatewayTrxId: is_scalar($gatewayTrxId) ? (string) $gatewayTrxId : null,
             amount: is_scalar($amount) ? (string) $amount : null,
             reason: is_scalar($reason) ? (string) $reason : null,
-            status: RefundStatus::from(is_scalar($status) ? (string) $status : 'pending'),
+            status: RefundStatus::tryFrom(is_scalar($status) ? (string) $status : 'pending') ?? RefundStatus::Pending,
             processedAt: is_scalar($processedAt) ? (string) $processedAt : null,
             createdAt: is_scalar($createdAt) ? (string) $createdAt : null,
         );

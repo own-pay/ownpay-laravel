@@ -151,12 +151,9 @@ final class HttpClient
         // Apply authentication
         $headers = $this->authenticator->authenticate($headers);
 
-        // Set content type for requests with body
-        if ($data !== null) {
-            $headers['Content-Type'] = 'application/json';
-        }
-
         try {
+            // Laravel's Http facade automatically sets Content-Type: application/json
+            // when using the 'json' option, so we don't need to set it manually.
             $response = Http::withHeaders($headers)
                 ->timeout($this->timeout)
                 ->withOptions([

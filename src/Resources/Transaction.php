@@ -103,7 +103,7 @@ final readonly class Transaction
             currency: is_scalar($currency) ? (string) $currency : '',
             fee: is_scalar($fee) ? (string) $fee : '0.00',
             netAmount: is_scalar($netAmount) ? (string) $netAmount : null,
-            status: TransactionStatus::from(is_scalar($status) ? (string) $status : 'pending'),
+            status: TransactionStatus::tryFrom(is_scalar($status) ? (string) $status : 'pending') ?? TransactionStatus::Pending,
             gateway: is_scalar($gateway) ? (string) $gateway : null,
             method: is_scalar($method) ? (string) $method : null,
             reference: is_scalar($reference) ? (string) $reference : null,

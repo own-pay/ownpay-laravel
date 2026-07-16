@@ -12,6 +12,18 @@ namespace OwnPay\Laravel\ValueObjects;
  */
 enum TransactionStatus: string
 {
+    case Pending = 'pending';
+    case Created = 'created';
+    case AwaitingVerification = 'awaiting_verification';
+    case PendingReview = 'pending_review';
+    case Processing = 'processing';
+    case CallbackProcessing = 'callback_processing';
+    case Completed = 'completed';
+    case Failed = 'failed';
+    case Cancelled = 'cancelled';
+    case Expired = 'expired';
+    case Refunded = 'refunded';
+
     /**
      * Check if the status is a terminal state.
      *
@@ -77,15 +89,4 @@ enum TransactionStatus: string
             self::Refunded => 'Refunded',
         };
     }
-    case Pending = 'pending';
-    case Created = 'created';
-    case AwaitingVerification = 'awaiting_verification';
-    case PendingReview = 'pending_review';
-    case Processing = 'processing';
-    case CallbackProcessing = 'callback_processing';
-    case Completed = 'completed';
-    case Failed = 'failed';
-    case Cancelled = 'cancelled';
-    case Expired = 'expired';
-    case Refunded = 'refunded';
 }

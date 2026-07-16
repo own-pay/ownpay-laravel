@@ -16,7 +16,7 @@ interface AuthenticatorInterface
      * Authenticate an HTTP request by adding the required headers.
      *
      * @param  array<string, string>  $headers  The existing headers.
-     * @return array<string, string>  The headers with authentication added.
+     * @return array<string, string> The headers with authentication added.
      */
     public function authenticate(array $headers): array;
 }

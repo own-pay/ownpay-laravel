@@ -40,7 +40,7 @@ final readonly class WebhookVerifier
      * @param  string  $payload  The raw webhook payload.
      * @param  string  $signatureHeader  The signature header value.
      * @param  int|null  $timestamp  The timestamp from the X-OwnPay-Timestamp header.
-     * @return array<string, mixed>  The verified and decoded payload.
+     * @return array<string, mixed> The verified and decoded payload.
      *
      * @throws SignatureVerificationException
      */
@@ -68,12 +68,14 @@ final readonly class WebhookVerifier
 
         // Decode and return payload
         try {
+            /** @var mixed $decoded */
             $decoded = json_decode($payload, true, 512, JSON_THROW_ON_ERROR);
 
             if (! is_array($decoded)) {
                 throw new \JsonException('Payload is not a JSON object.');
             }
 
+            /** @var array<string, mixed> $decoded */
             return $decoded;
         } catch (\JsonException $e) {
             throw new SignatureVerificationException(
@@ -91,7 +93,7 @@ final readonly class WebhookVerifier
      *
      * @param  string  $payload  The raw request body.
      * @param  array<string, string>  $headers  The request headers.
-     * @return array<string, mixed>  The verified and decoded payload.
+     * @return array<string, mixed> The verified and decoded payload.
      *
      * @throws SignatureVerificationException
      */
@@ -129,7 +131,7 @@ final readonly class WebhookVerifier
      * This is the same signing algorithm used by OwnPay's WebhookDispatcher.
      *
      * @param  string  $payload  The payload to sign.
-     * @return string  The hex-encoded HMAC-SHA256 signature.
+     * @return string The hex-encoded HMAC-SHA256 signature.
      */
     public function sign(string $payload): string
     {
@@ -140,6 +142,7 @@ final readonly class WebhookVerifier
      * Verify the timestamp is within tolerance.
      *
      * @param  int  $timestamp  The webhook timestamp.
+     *
      * @throws SignatureVerificationException
      */
     private function verifyTimestamp(int $timestamp): void
@@ -165,7 +168,7 @@ final readonly class WebhookVerifier
      * - sha256=<hex> prefix format
      *
      * @param  string  $header  The signature header value.
-     * @return string  The hex signature.
+     * @return string The hex signature.
      */
     private function extractSignature(string $header): string
     {
@@ -182,7 +185,7 @@ final readonly class WebhookVerifier
      *
      * @param  array<string, string>  $headers  The headers array.
      * @param  string[]  $names  The header names to search for.
-     * @return string|null  The header value or null.
+     * @return string|null The header value or null.
      */
     private function findHeader(array $headers, array $names): ?string
     {

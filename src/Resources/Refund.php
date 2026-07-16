@@ -47,34 +47,53 @@ final readonly class Refund
      * Create a Refund from an API response.
      *
      * @param  Response  $response  The API response.
-     * @return static
      */
     public static function fromResponse(Response $response): static
     {
         $data = $response->getData() ?? [];
 
-        return static::fromArray($data);
+        return self::fromArray($data);
     }
 
     /**
      * Create a Refund from an array.
      *
      * @param  array<string, mixed>  $data  The refund data.
-     * @return static
      */
     public static function fromArray(array $data): static
     {
+        /** @var mixed $idValue */
+        $idValue = $data['id'] ?? null;
+        /** @var mixed $uuid */
+        $uuid = $data['uuid'] ?? null;
+        /** @var mixed $txnIdValue */
+        $txnIdValue = $data['transaction_id'] ?? null;
+        /** @var mixed $trxId */
+        $trxId = $data['trx_id'] ?? null;
+        /** @var mixed $gatewayTrxId */
+        $gatewayTrxId = $data['gateway_trx_id'] ?? null;
+        /** @var mixed $amount */
+        $amount = $data['amount'] ?? null;
+        /** @var mixed $reason */
+        $reason = $data['reason'] ?? null;
+        /** @var mixed $status */
+        $status = $data['status'] ?? 'pending';
+        /** @var mixed $processedAt */
+        $processedAt = $data['processed_at'] ?? null;
+        /** @var mixed $createdAt */
+        $createdAt = $data['created_at'] ?? null;
+
         return new static(
-            id: isset($data['id']) ? (int) $data['id'] : null,
-            uuid: $data['uuid'] ?? null,
-            transactionId: isset($data['transaction_id']) ? (int) $data['transaction_id'] : null,
-            trxId: $data['trx_id'] ?? null,
-            gatewayTrxId: $data['gateway_trx_id'] ?? null,
-            amount: $data['amount'] ?? null,
-            reason: $data['reason'] ?? null,
-            status: RefundStatus::from($data['status'] ?? 'pending'),
-            processedAt: $data['processed_at'] ?? null,
-            createdAt: $data['created_at'] ?? null,
+            id: is_numeric($idValue) ? (int) $idValue : null,
+            uuid: is_scalar($uuid) ? (string) $uuid : null,
+            transactionId: is_numeric($txnIdValue) ? (int) $txnIdValue : null,
+            trxId: is_scalar($trxId) ? (string) $trxId : null,
+            gatewayTrxId: is_scalar($gatewayTrxId) ? (string) $gatewayTrxId : null,
+            amount: is_scalar($amount) ? (string) $amount : null,
+            reason: is_scalar($reason) ? (string) $reason : null,
+            status: RefundStatus::from(is_scalar($status) ? (string) $status : 'pending'),
+            processedAt: is_scalar($processedAt) ? (string) $processedAt : null,
+            createdAt: is_scalar($createdAt) ? (string) $createdAt : null,
         );
     }
 
@@ -112,7 +131,7 @@ final readonly class Refund
             'status' => $this->status->value,
             'processed_at' => $this->processedAt,
             'created_at' => $this->createdAt,
-        ], fn (mixed $value) => $value !== null);
+        ], static fn (mixed $value): bool => $value !== null);
     }
 
     /**

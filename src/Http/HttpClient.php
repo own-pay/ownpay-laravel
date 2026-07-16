@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace OwnPay\Laravel\Http;
 
+use Illuminate\Support\Facades\Http;
 use OwnPay\Laravel\Auth\AuthenticatorInterface;
 use OwnPay\Laravel\Exception\AuthenticationException;
 use OwnPay\Laravel\Exception\ConnectionException;
@@ -62,7 +63,6 @@ final class HttpClient
      * @param  string  $endpoint  The API endpoint (e.g., "/api/v1/payments").
      * @param  array<string, mixed>  $query  Query parameters.
      * @param  array<string, string>  $headers  Additional headers.
-     * @return Response
      *
      * @throws OwnPayExceptionInterface
      */
@@ -79,7 +79,6 @@ final class HttpClient
      * @param  string  $endpoint  The API endpoint.
      * @param  array<string, mixed>  $data  The request body data.
      * @param  array<string, string>  $headers  Additional headers.
-     * @return Response
      *
      * @throws OwnPayExceptionInterface
      */
@@ -96,7 +95,6 @@ final class HttpClient
      * @param  string  $endpoint  The API endpoint.
      * @param  array<string, mixed>  $data  The request body data.
      * @param  array<string, string>  $headers  Additional headers.
-     * @return Response
      *
      * @throws OwnPayExceptionInterface
      */
@@ -113,7 +111,6 @@ final class HttpClient
      * @param  string  $endpoint  The API endpoint.
      * @param  array<string, mixed>  $data  The request body data.
      * @param  array<string, string>  $headers  Additional headers.
-     * @return Response
      *
      * @throws OwnPayExceptionInterface
      */
@@ -129,7 +126,6 @@ final class HttpClient
      *
      * @param  string  $endpoint  The API endpoint.
      * @param  array<string, string>  $headers  Additional headers.
-     * @return Response
      *
      * @throws OwnPayExceptionInterface
      */
@@ -147,7 +143,6 @@ final class HttpClient
      * @param  string  $url  The full URL.
      * @param  array<string, string>  $headers  Additional headers.
      * @param  array<string, mixed>|null  $data  The request body data.
-     * @return Response
      *
      * @throws OwnPayExceptionInterface
      */
@@ -162,7 +157,7 @@ final class HttpClient
         }
 
         try {
-            $response = \Illuminate\Support\Facades\Http::withHeaders($headers)
+            $response = Http::withHeaders($headers)
                 ->timeout($this->timeout)
                 ->withOptions([
                     'verify' => $this->verifySsl,
@@ -209,7 +204,6 @@ final class HttpClient
      *
      * @param  string  $endpoint  The API endpoint.
      * @param  array<string, mixed>  $query  Query parameters.
-     * @return string
      */
     private function buildUrl(string $endpoint, array $query = []): string
     {
@@ -226,6 +220,7 @@ final class HttpClient
      * Throw an appropriate exception for an error response.
      *
      * @param  Response  $response  The error response.
+     *
      * @throws OwnPayExceptionInterface
      */
     private function throwExceptionForResponse(Response $response): never
@@ -233,6 +228,8 @@ final class HttpClient
         $message = $response->getErrorMessage() ?? 'Unknown API error';
         $errorCode = $response->getErrorCode();
         $statusCode = $response->statusCode;
+
+        /** @var array<string, mixed> $details */
         $details = $response->getErrors();
 
         $exception = match ($statusCode) {

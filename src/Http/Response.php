@@ -35,21 +35,22 @@ final readonly class Response
      * @param  int  $statusCode  The HTTP status code.
      * @param  array<string, string>  $headers  The response headers.
      * @param  string  $body  The raw response body.
-     * @return static
      */
     public static function fromHttpResponse(int $statusCode, array $headers, string $body): static
     {
         $data = null;
 
         if ($body !== '') {
+            /** @var mixed $decoded */
             $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
 
             if (is_array($decoded)) {
+                /** @var array<string, mixed> $data */
                 $data = $decoded;
             }
         }
 
-        return new static($statusCode, $headers, $body, $data);
+        return new self($statusCode, $headers, $body, $data);
     }
 
     /**
@@ -81,7 +82,14 @@ final readonly class Response
      */
     public function getSuccess(): bool
     {
-        return $this->data['success'] ?? false;
+        if ($this->data === null) {
+            return false;
+        }
+
+        /** @var mixed $success */
+        $success = $this->data['success'] ?? false;
+
+        return (bool) $success;
     }
 
     /**
@@ -91,7 +99,19 @@ final readonly class Response
      */
     public function getData(): ?array
     {
-        return $this->data['data'] ?? null;
+        if ($this->data === null) {
+            return null;
+        }
+
+        /** @var mixed $data */
+        $data = $this->data['data'] ?? null;
+
+        if (! is_array($data)) {
+            return null;
+        }
+
+        /** @var array<string, mixed> $data */
+        return $data;
     }
 
     /**
@@ -101,7 +121,19 @@ final readonly class Response
      */
     public function getMeta(): ?array
     {
-        return $this->data['meta'] ?? null;
+        if ($this->data === null) {
+            return null;
+        }
+
+        /** @var mixed $meta */
+        $meta = $this->data['meta'] ?? null;
+
+        if (! is_array($meta)) {
+            return null;
+        }
+
+        /** @var array<string, mixed> $meta */
+        return $meta;
     }
 
     /**
@@ -109,7 +141,18 @@ final readonly class Response
      */
     public function getErrorMessage(): ?string
     {
-        return $this->data['error'] ?? $this->data['message'] ?? null;
+        if ($this->data === null) {
+            return null;
+        }
+
+        /** @var mixed $error */
+        $error = $this->data['error'] ?? $this->data['message'] ?? null;
+
+        if (is_string($error)) {
+            return $error;
+        }
+
+        return null;
     }
 
     /**
@@ -117,23 +160,50 @@ final readonly class Response
      */
     public function getErrorCode(): ?string
     {
-        $errors = $this->data['errors'] ?? [];
-
-        if (is_array($errors) && !empty($errors)) {
-            return $errors[0]['code'] ?? null;
+        if ($this->data === null) {
+            return null;
         }
 
-        return null;
+        /** @var mixed $errors */
+        $errors = $this->data['errors'] ?? [];
+
+        if (! is_array($errors) || empty($errors)) {
+            return null;
+        }
+
+        /** @var mixed $firstError */
+        $firstError = $errors[0] ?? null;
+
+        if (! is_array($firstError)) {
+            return null;
+        }
+
+        /** @var mixed $code */
+        $code = $firstError['code'] ?? null;
+
+        return is_string($code) ? $code : null;
     }
 
     /**
      * Get all errors from the response.
      *
-     * @return array<int, array{code: string, message: string, field?: string}>
+     * @return list<array{code: string, message: string, field?: string}>
      */
     public function getErrors(): array
     {
-        return $this->data['errors'] ?? [];
+        if ($this->data === null) {
+            return [];
+        }
+
+        /** @var mixed $errors */
+        $errors = $this->data['errors'] ?? [];
+
+        if (! is_array($errors)) {
+            return [];
+        }
+
+        /** @var list<array{code: string, message: string, field?: string}> $errors */
+        return $errors;
     }
 
     /**
@@ -141,7 +211,19 @@ final readonly class Response
      */
     public function getRequestId(): ?string
     {
-        return $this->data['request_id'] ?? $this->headers['x-request-id'] ?? null;
+        if ($this->data !== null) {
+            /** @var mixed $requestId */
+            $requestId = $this->data['request_id'] ?? null;
+
+            if (is_string($requestId)) {
+                return $requestId;
+            }
+        }
+
+        /** @var mixed $headerValue */
+        $headerValue = $this->headers['x-request-id'] ?? null;
+
+        return is_string($headerValue) ? $headerValue : null;
     }
 
     /**

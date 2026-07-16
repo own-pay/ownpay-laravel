@@ -7,6 +7,7 @@ namespace OwnPay\Laravel\Laravel\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use OwnPay\Laravel\Laravel\Events\WebhookReceived;
 
 /**
  * Webhook controller for handling OwnPay webhook events.
@@ -20,10 +21,10 @@ class WebhookController extends Controller
      * Handle an incoming webhook.
      *
      * @param  Request  $request  The incoming request with verified webhook payload.
-     * @return JsonResponse
      */
     public function handle(Request $request): JsonResponse
     {
+        /** @var mixed $payload */
         $payload = $request->input('_verified_webhook');
 
         if (! is_array($payload)) {
@@ -33,11 +34,13 @@ class WebhookController extends Controller
             ], 400);
         }
 
-        // Dispatch webhook event
-        $event = $payload['event'] ?? 'unknown';
+        /** @var mixed $eventValue */
+        $eventValue = $payload['event'] ?? 'unknown';
+        $event = is_string($eventValue) ? $eventValue : 'unknown';
 
         // Fire Laravel event for the webhook
-        event(new \OwnPay\Laravel\Laravel\Events\WebhookReceived($event, $payload));
+        /** @var array<string, mixed> $payload */
+        event(new WebhookReceived($event, $payload));
 
         return response()->json([
             'success' => true,

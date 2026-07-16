@@ -19,6 +19,21 @@ class RateLimitException extends ApiException
     {
         $details = $this->getErrorDetails();
 
-        return isset($details['retry_after']) ? (int) $details['retry_after'] : null;
+        if ($details === null) {
+            return null;
+        }
+
+        /** @var mixed $retryAfter */
+        $retryAfter = $details['retry_after'] ?? null;
+
+        if (is_int($retryAfter)) {
+            return $retryAfter;
+        }
+
+        if (is_string($retryAfter) && is_numeric($retryAfter)) {
+            return (int) $retryAfter;
+        }
+
+        return null;
     }
 }

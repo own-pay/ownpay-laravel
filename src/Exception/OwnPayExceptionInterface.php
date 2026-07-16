@@ -13,5 +13,13 @@ namespace OwnPay\Laravel\Exception;
  */
 interface OwnPayExceptionInterface extends \Throwable
 {
-    //
+    /**
+     * Get the HTTP status code.
+     */
+    public function getHttpStatusCode(): ?int;
+
+    /**
+     * Get the machine-readable error code.
+     */
+    public function getErrorCode(): ?string;
 }

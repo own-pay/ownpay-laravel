@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OwnPay\Laravel\Laravel\Middleware;
 
 use Closure;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use OwnPay\Laravel\Exception\SignatureVerificationException;
@@ -34,9 +35,9 @@ class VerifyWebhookSignature
      *
      * @param  Request  $request  The incoming request.
      * @param  Closure(Request): Response  $next  The next middleware.
-     * @return Response
+     * @return Response|JsonResponse
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next): Response|JsonResponse
     {
         try {
             $payload = $request->getContent();
@@ -45,7 +46,7 @@ class VerifyWebhookSignature
             // Normalize headers to string values
             $normalizedHeaders = [];
             foreach ($headers as $key => $values) {
-                $normalizedHeaders[$key] = is_array($values) ? implode(', ', $values) : (string) $values;
+                $normalizedHeaders[$key] = implode(', ', (array) $values);
             }
 
             // Verify the webhook

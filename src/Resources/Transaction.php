@@ -53,37 +53,62 @@ final readonly class Transaction
      * Create a Transaction from an API response.
      *
      * @param  Response  $response  The API response.
-     * @return static
      */
     public static function fromResponse(Response $response): static
     {
         $data = $response->getData() ?? [];
 
-        return static::fromArray($data);
+        return self::fromArray($data);
     }
 
     /**
      * Create a Transaction from an array.
      *
      * @param  array<string, mixed>  $data  The transaction data.
-     * @return static
      */
     public static function fromArray(array $data): static
     {
+        /** @var mixed $idValue */
+        $idValue = $data['id'] ?? 0;
+        /** @var mixed $trxId */
+        $trxId = $data['trx_id'] ?? '';
+        /** @var mixed $gatewayTrxId */
+        $gatewayTrxId = $data['gateway_trx_id'] ?? null;
+        /** @var mixed $amount */
+        $amount = $data['amount'] ?? '0.00';
+        /** @var mixed $currency */
+        $currency = $data['currency'] ?? '';
+        /** @var mixed $fee */
+        $fee = $data['fee'] ?? '0.00';
+        /** @var mixed $netAmount */
+        $netAmount = $data['net_amount'] ?? null;
+        /** @var mixed $status */
+        $status = $data['status'] ?? 'pending';
+        /** @var mixed $gateway */
+        $gateway = $data['gateway'] ?? null;
+        /** @var mixed $method */
+        $method = $data['method'] ?? null;
+        /** @var mixed $reference */
+        $reference = $data['reference'] ?? null;
+        /** @var mixed $createdAt */
+        $createdAt = $data['created_at'] ?? '';
+        /** @var mixed $updatedAt */
+        $updatedAt = $data['updated_at'] ?? null;
+
         return new static(
-            id: (int) ($data['id'] ?? 0),
-            trxId: (string) ($data['trx_id'] ?? ''),
-            gatewayTrxId: $data['gateway_trx_id'] ?? null,
-            amount: (string) ($data['amount'] ?? '0.00'),
-            currency: (string) ($data['currency'] ?? ''),
-            fee: (string) ($data['fee'] ?? '0.00'),
-            netAmount: $data['net_amount'] ?? null,
-            status: TransactionStatus::from($data['status'] ?? 'pending'),
-            gateway: $data['gateway'] ?? null,
-            method: $data['method'] ?? null,
-            reference: $data['reference'] ?? null,
-            createdAt: (string) ($data['created_at'] ?? ''),
-            updatedAt: $data['updated_at'] ?? null,
+            id: is_numeric($idValue) ? (int) $idValue : 0,
+            trxId: is_scalar($trxId) ? (string) $trxId : '',
+            gatewayTrxId: is_scalar($gatewayTrxId) ? (string) $gatewayTrxId : null,
+            amount: is_scalar($amount) ? (string) $amount : '0.00',
+            currency: is_scalar($currency) ? (string) $currency : '',
+            fee: is_scalar($fee) ? (string) $fee : '0.00',
+            netAmount: is_scalar($netAmount) ? (string) $netAmount : null,
+            status: TransactionStatus::from(is_scalar($status) ? (string) $status : 'pending'),
+            gateway: is_scalar($gateway) ? (string) $gateway : null,
+            method: is_scalar($method) ? (string) $method : null,
+            reference: is_scalar($reference) ? (string) $reference : null,
+            createdAt: is_scalar($createdAt) ? (string) $createdAt : '',
+            updatedAt: is_scalar($updatedAt) ? (string) $updatedAt : null,
         );
     }
 

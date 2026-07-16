@@ -5,12 +5,7 @@ parameters:
     paths:
         - src/
 
-    level: 8
-
-    ignoreErrors:
-        - '#Call to an undefined method Illuminate\\Support\\Facades\\#'
-
-    checkMissingIterableValueType: true
+    level: 9
 
     reportUnmatchedIgnoredErrors: true
 

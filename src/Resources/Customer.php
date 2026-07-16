@@ -42,32 +42,47 @@ final readonly class Customer
      * Create a Customer from an API response.
      *
      * @param  Response  $response  The API response.
-     * @return static
      */
     public static function fromResponse(Response $response): static
     {
         $data = $response->getData() ?? [];
 
-        return static::fromArray($data);
+        return self::fromArray($data);
     }
 
     /**
      * Create a Customer from an array.
      *
      * @param  array<string, mixed>  $data  The customer data.
-     * @return static
      */
     public static function fromArray(array $data): static
     {
+        /** @var mixed $idValue */
+        $idValue = $data['id'] ?? null;
+        /** @var mixed $uuid */
+        $uuid = $data['uuid'] ?? null;
+        /** @var mixed $name */
+        $name = $data['name'] ?? null;
+        /** @var mixed $email */
+        $email = $data['email'] ?? null;
+        /** @var mixed $phone */
+        $phone = $data['phone'] ?? null;
+        /** @var mixed $emailMasked */
+        $emailMasked = $data['email_masked'] ?? null;
+        /** @var mixed $phoneMasked */
+        $phoneMasked = $data['phone_masked'] ?? null;
+        /** @var mixed $createdAt */
+        $createdAt = $data['created_at'] ?? null;
+
         return new static(
-            id: isset($data['id']) ? (int) $data['id'] : null,
-            uuid: $data['uuid'] ?? null,
-            name: $data['name'] ?? null,
-            email: $data['email'] ?? null,
-            phone: $data['phone'] ?? null,
-            emailMasked: $data['email_masked'] ?? null,
-            phoneMasked: $data['phone_masked'] ?? null,
-            createdAt: $data['created_at'] ?? null,
+            id: is_numeric($idValue) ? (int) $idValue : null,
+            uuid: is_scalar($uuid) ? (string) $uuid : null,
+            name: is_scalar($name) ? (string) $name : null,
+            email: is_scalar($email) ? (string) $email : null,
+            phone: is_scalar($phone) ? (string) $phone : null,
+            emailMasked: is_scalar($emailMasked) ? (string) $emailMasked : null,
+            phoneMasked: is_scalar($phoneMasked) ? (string) $phoneMasked : null,
+            createdAt: is_scalar($createdAt) ? (string) $createdAt : null,
         );
     }
 
@@ -95,7 +110,7 @@ final readonly class Customer
             'email_masked' => $this->emailMasked,
             'phone_masked' => $this->phoneMasked,
             'created_at' => $this->createdAt,
-        ], fn (mixed $value) => $value !== null);
+        ], static fn (mixed $value): bool => $value !== null);
     }
 
     /**

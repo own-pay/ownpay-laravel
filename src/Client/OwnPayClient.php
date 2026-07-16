@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace OwnPay\Laravel\Client;
 
 use OwnPay\Laravel\Http\HttpClient;
-use OwnPay\Laravel\Http\Response;
 use OwnPay\Laravel\Resources\Customer;
 use OwnPay\Laravel\Resources\Payment;
 use OwnPay\Laravel\Resources\Refund;
@@ -38,13 +37,22 @@ final class OwnPayClient
     /**
      * Check the health of the OwnPay API.
      *
-     * @return array{status: string, version: string, db: string, mobile: array, gateways: int, customers: int, time: string}
+     * @return array{status: string, version: string, db: string, mobile: array{connected: bool, active_devices: int}, gateways: int, customers: int, time: string}
      */
     public function health(): array
     {
         $response = $this->http->get('/api/v1/health');
 
-        return $response->getData() ?? [];
+        /** @var array{status: string, version: string, db: string, mobile: array{connected: bool, active_devices: int}, gateways: int, customers: int, time: string} */
+        return $response->getData() ?? [
+            'status' => 'unknown',
+            'version' => '',
+            'db' => 'unknown',
+            'mobile' => ['connected' => false, 'active_devices' => 0],
+            'gateways' => 0,
+            'customers' => 0,
+            'time' => '',
+        ];
     }
 
     // =========================================================================
@@ -69,7 +77,6 @@ final class OwnPayClient
      *     gateway?: string,
      *     metadata?: array<string, mixed>,
      * }  $data  The payment data.
-     * @return Payment
      */
     public function createPayment(array $data): Payment
     {
@@ -82,7 +89,6 @@ final class OwnPayClient
      * Get a payment by ID.
      *
      * @param  string  $paymentId  The payment UUID.
-     * @return Payment
      */
     public function getPayment(string $paymentId): Payment
     {
@@ -106,16 +112,21 @@ final class OwnPayClient
      *     from?: string,
      *     to?: string,
      * }  $params  Optional filters and pagination.
-     * @return array{data: Transaction[], meta: array}
+     * @return array{data: list<Transaction>, meta: array<string, mixed>}
      */
     public function listTransactions(array $params = []): array
     {
         $response = $this->http->get('/api/v1/transactions', $params);
 
-        $transactions = array_map(
-            fn (array $item) => Transaction::fromArray($item),
-            $response->getData() ?? [],
-        );
+        $data = $response->getData() ?? [];
+        /** @var list<Transaction> $transactions */
+        $transactions = [];
+        foreach ($data as $item) {
+            if (is_array($item)) {
+                /** @var array<string, mixed> $item */
+                $transactions[] = Transaction::fromArray($item);
+            }
+        }
 
         return [
             'data' => $transactions,
@@ -127,7 +138,6 @@ final class OwnPayClient
      * Get a transaction by ID or gateway transaction ID.
      *
      * @param  string  $trxId  The transaction ID (OP-XXXXX) or gateway transaction ID.
-     * @return Transaction
      */
     public function getTransaction(string $trxId): Transaction
     {
@@ -149,7 +159,6 @@ final class OwnPayClient
      *     amount?: string|float,
      *     reason?: string,
      * }  $data  The refund data. Either trx_id or transaction_id is required.
-     * @return Refund
      */
     public function createRefund(array $data): Refund
     {
@@ -170,16 +179,21 @@ final class OwnPayClient
      *     from?: string,
      *     to?: string,
      * }  $params  Optional filters and pagination.
-     * @return array{data: Refund[], meta: array}
+     * @return array{data: list<Refund>, meta: array<string, mixed>}
      */
     public function listRefunds(array $params = []): array
     {
         $response = $this->http->get('/api/v1/refunds', $params);
 
-        $refunds = array_map(
-            fn (array $item) => Refund::fromArray($item),
-            $response->getData() ?? [],
-        );
+        $data = $response->getData() ?? [];
+        /** @var list<Refund> $refunds */
+        $refunds = [];
+        foreach ($data as $item) {
+            if (is_array($item)) {
+                /** @var array<string, mixed> $item */
+                $refunds[] = Refund::fromArray($item);
+            }
+        }
 
         return [
             'data' => $refunds,
@@ -191,7 +205,6 @@ final class OwnPayClient
      * Get a refund by transaction ID.
      *
      * @param  string  $trxId  The transaction ID.
-     * @return Refund
      */
     public function getRefund(string $trxId): Refund
     {
@@ -212,7 +225,6 @@ final class OwnPayClient
      *     email?: string,
      *     phone?: string,
      * }  $data  The customer data.
-     * @return Customer
      */
     public function createCustomer(array $data): Customer
     {
@@ -228,16 +240,21 @@ final class OwnPayClient
      *     page?: int,
      *     per_page?: int,
      * }  $params  Optional pagination.
-     * @return array{data: Customer[], meta: array}
+     * @return array{data: list<Customer>, meta: array<string, mixed>}
      */
     public function listCustomers(array $params = []): array
     {
         $response = $this->http->get('/api/v1/customers', $params);
 
-        $customers = array_map(
-            fn (array $item) => Customer::fromArray($item),
-            $response->getData() ?? [],
-        );
+        $data = $response->getData() ?? [];
+        /** @var list<Customer> $customers */
+        $customers = [];
+        foreach ($data as $item) {
+            if (is_array($item)) {
+                /** @var array<string, mixed> $item */
+                $customers[] = Customer::fromArray($item);
+            }
+        }
 
         return [
             'data' => $customers,
@@ -249,7 +266,6 @@ final class OwnPayClient
      * Get a customer by identifier (email or phone).
      *
      * @param  string  $identifier  The customer email or phone.
-     * @return Customer
      */
     public function getCustomer(string $identifier): Customer
     {
@@ -271,18 +287,20 @@ final class OwnPayClient
     {
         $response = $this->http->post('/api/v1/webhooks/tests');
 
-        return $response->getData() ?? [];
+        /** @var array{status_code: int|null, response_time_ms: int|null} */
+        return $response->getData() ?? ['status_code' => null, 'response_time_ms' => null];
     }
 
     /**
      * List recent webhook deliveries.
      *
-     * @return array<int, array<string, mixed>>
+     * @return list<array<string, mixed>>
      */
     public function listWebhookDeliveries(): array
     {
         $response = $this->http->get('/api/v1/webhooks/deliveries');
 
+        /** @var list<array<string, mixed>> */
         return $response->getData() ?? [];
     }
 
@@ -293,12 +311,13 @@ final class OwnPayClient
     /**
      * List API keys for the merchant.
      *
-     * @return array<int, array<string, mixed>>
+     * @return list<array<string, mixed>>
      */
     public function listApiKeys(): array
     {
         $response = $this->http->get('/api/v1/api-keys');
 
+        /** @var list<array<string, mixed>> */
         return $response->getData() ?? [];
     }
 
@@ -307,7 +326,7 @@ final class OwnPayClient
      *
      * @param  array{
      *     name?: string,
-     *     scopes?: string[],
+     *     scopes?: list<string>,
      * }  $params  Optional key configuration.
      * @return array{key: string, prefix: string, warning: string}
      */
@@ -315,7 +334,8 @@ final class OwnPayClient
     {
         $response = $this->http->post('/api/v1/api-keys', $params);
 
-        return $response->getData() ?? [];
+        /** @var array{key: string, prefix: string, warning: string} */
+        return $response->getData() ?? ['key' => '', 'prefix' => '', 'warning' => ''];
     }
 
     /**
@@ -328,6 +348,7 @@ final class OwnPayClient
     {
         $response = $this->http->delete("/api/v1/api-keys/{$keyId}");
 
-        return $response->getData() ?? [];
+        /** @var array{message: string} */
+        return $response->getData() ?? ['message' => ''];
     }
 }

@@ -34,11 +34,12 @@ class VerifyWebhookCommand extends Command
      */
     public function handle(WebhookVerifier $verifier): int
     {
-        // Get payload
+        /** @var string|false $payload */
         $payload = $this->option('payload');
+        /** @var string|false $file */
         $file = $this->option('file');
 
-        if ($file) {
+        if ($file !== false && $file !== '') {
             if (! file_exists($file)) {
                 $this->error("File not found: {$file}");
 
@@ -53,23 +54,23 @@ class VerifyWebhookCommand extends Command
             }
         }
 
-        if (empty($payload)) {
+        if ($payload === false || $payload === '') {
             $this->error('No payload provided. Use --payload or --file option.');
 
             return self::FAILURE;
         }
 
-        // Get signature
+        /** @var string|false $signature */
         $signature = $this->option('signature');
-        if (empty($signature)) {
+        if ($signature === false || $signature === '') {
             $this->error('No signature provided. Use --signature option.');
 
             return self::FAILURE;
         }
 
-        // Get timestamp
+        /** @var string|false $timestamp */
         $timestamp = $this->option('timestamp');
-        $timestampInt = $timestamp !== null ? (int) $timestamp : null;
+        $timestampInt = ($timestamp !== false && $timestamp !== '') ? (int) $timestamp : null;
 
         try {
             $result = $verifier->verify($payload, $signature, $timestampInt);
@@ -77,7 +78,7 @@ class VerifyWebhookCommand extends Command
             $this->info('✓ Signature verified successfully!');
             $this->newLine();
             $this->info('Decoded payload:');
-            $this->line(json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            $this->line((string) json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 
             return self::SUCCESS;
         } catch (\Throwable $e) {

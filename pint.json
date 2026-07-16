@@ -3,7 +3,6 @@
   "rules": {
     "declare_strict_types": true,
     "strict_param": true,
-    "strict_properties": true,
     "array_syntax": {
       "syntax": "short"
     },

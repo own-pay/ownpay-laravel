@@ -18,7 +18,7 @@ abstract class ApiException extends \RuntimeException implements OwnPayException
      * @param  string  $message  The error message.
      * @param  int|null  $httpStatusCode  The HTTP status code from the API response.
      * @param  string|null  $errorCode  The machine-readable error code from the API.
-     * @param  array|null  $errorDetails  Additional error details from the API.
+     * @param  array<string, mixed>|null  $errorDetails  Additional error details from the API.
      * @param  \Throwable|null  $previous  The previous exception for chaining.
      */
     public function __construct(
@@ -55,23 +55,5 @@ abstract class ApiException extends \RuntimeException implements OwnPayException
     public function getErrorDetails(): ?array
     {
         return $this->errorDetails;
-    }
-
-    /**
-     * Create an exception from an API error response.
-     *
-     * @param  string  $message  The error message.
-     * @param  int  $httpStatusCode  The HTTP status code.
-     * @param  string|null  $errorCode  The error code from the response.
-     * @param  array|null  $errorDetails  The error details from the response.
-     * @return static
-     */
-    public static function fromApiResponse(
-        string $message,
-        int $httpStatusCode,
-        ?string $errorCode = null,
-        ?array $errorDetails = null,
-    ): static {
-        return new static($message, $httpStatusCode, $errorCode, $errorDetails);
     }
 }

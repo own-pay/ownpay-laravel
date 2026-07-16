@@ -38,7 +38,7 @@ class TestConnectionCommand extends Command
             $health = $client->health();
 
             if ($this->option('json')) {
-                $this->line(json_encode($health, JSON_PRETTY_PRINT));
+                $this->line((string) json_encode($health, JSON_PRETTY_PRINT));
 
                 return self::SUCCESS;
             }
@@ -50,19 +50,19 @@ class TestConnectionCommand extends Command
             $this->table(
                 ['Property', 'Value'],
                 [
-                    ['Status', $health['status'] ?? 'unknown'],
-                    ['Version', $health['version'] ?? 'unknown'],
-                    ['Database', $health['db'] ?? 'unknown'],
-                    ['Gateways', (string) ($health['gateways'] ?? 0)],
-                    ['Customers', (string) ($health['customers'] ?? 0)],
-                    ['Time', $health['time'] ?? 'unknown'],
+                    ['Status', $health['status']],
+                    ['Version', $health['version']],
+                    ['Database', $health['db']],
+                    ['Gateways', (string) $health['gateways']],
+                    ['Customers', (string) $health['customers']],
+                    ['Time', $health['time']],
                 ],
             );
 
             return self::SUCCESS;
         } catch (OwnPayExceptionInterface $e) {
             if ($this->option('json')) {
-                $this->line(json_encode([
+                $this->line((string) json_encode([
                     'success' => false,
                     'error' => $e->getMessage(),
                     'error_code' => $e->getErrorCode(),
@@ -76,18 +76,18 @@ class TestConnectionCommand extends Command
             $this->newLine();
             $this->error("Error: {$e->getMessage()}");
 
-            if ($e->getErrorCode()) {
+            if ($e->getErrorCode() !== null) {
                 $this->error("Code: {$e->getErrorCode()}");
             }
 
-            if ($e->getHttpStatusCode()) {
+            if ($e->getHttpStatusCode() !== null) {
                 $this->error("HTTP Status: {$e->getHttpStatusCode()}");
             }
 
             return self::FAILURE;
         } catch (\Throwable $e) {
             if ($this->option('json')) {
-                $this->line(json_encode([
+                $this->line((string) json_encode([
                     'success' => false,
                     'error' => $e->getMessage(),
                 ], JSON_PRETTY_PRINT));

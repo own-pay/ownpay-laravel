@@ -57,7 +57,6 @@ final readonly class Payment
      * Create a Payment from an API response.
      *
      * @param  Response  $response  The API response.
-     * @return static
      */
     public static function fromResponse(Response $response): static
     {
@@ -65,42 +64,79 @@ final readonly class Payment
 
         // Handle create response (minimal fields)
         if (isset($data['payment_id'])) {
-            return new static(
-                paymentId: $data['payment_id'],
-                token: $data['token'] ?? '',
-                checkoutUrl: $data['checkout_url'] ?? '',
-                status: PaymentStatus::from($data['status'] ?? 'pending'),
-            );
+            return self::fromArray($data);
         }
 
         // Handle full payment response
-        return static::fromArray($data);
+        return self::fromArray($data);
     }
 
     /**
      * Create a Payment from an array.
      *
      * @param  array<string, mixed>  $data  The payment data.
-     * @return static
      */
     public static function fromArray(array $data): static
     {
+        /** @var mixed $customerData */
+        $customerData = $data['customer'] ?? null;
+        /** @var array{name?: string, email?: string}|null $customer */
+        $customer = null;
+        if (is_array($customerData)) {
+            $customer = [];
+            if (isset($customerData['name']) && is_string($customerData['name'])) {
+                $customer['name'] = $customerData['name'];
+            }
+            if (isset($customerData['email']) && is_string($customerData['email'])) {
+                $customer['email'] = $customerData['email'];
+            }
+        }
+
+        /** @var mixed $paymentId */
+        $paymentId = $data['payment_id'] ?? $data['uuid'] ?? '';
+        /** @var mixed $token */
+        $token = $data['token'] ?? '';
+        /** @var mixed $checkoutUrl */
+        $checkoutUrl = $data['checkout_url'] ?? '';
+        /** @var mixed $status */
+        $status = $data['status'] ?? 'pending';
+        /** @var mixed $trxId */
+        $trxId = $data['trx_id'] ?? null;
+        /** @var mixed $gatewayTrxId */
+        $gatewayTrxId = $data['gateway_trx_id'] ?? null;
+        /** @var mixed $amount */
+        $amount = $data['amount'] ?? null;
+        /** @var mixed $currency */
+        $currency = $data['currency'] ?? null;
+        /** @var mixed $fee */
+        $fee = $data['fee'] ?? null;
+        /** @var mixed $gateway */
+        $gateway = $data['gateway'] ?? null;
+        /** @var mixed $method */
+        $method = $data['method'] ?? null;
+        /** @var mixed $reference */
+        $reference = $data['reference'] ?? null;
+        /** @var mixed $createdAt */
+        $createdAt = $data['created_at'] ?? null;
+        /** @var mixed $completedAt */
+        $completedAt = $data['completed_at'] ?? null;
+
         return new static(
-            paymentId: $data['payment_id'] ?? $data['uuid'] ?? '',
-            token: $data['token'] ?? '',
-            checkoutUrl: $data['checkout_url'] ?? '',
-            status: PaymentStatus::from($data['status'] ?? 'pending'),
-            trxId: $data['trx_id'] ?? null,
-            gatewayTrxId: $data['gateway_trx_id'] ?? null,
-            amount: $data['amount'] ?? null,
-            currency: $data['currency'] ?? null,
-            fee: $data['fee'] ?? null,
-            gateway: $data['gateway'] ?? null,
-            method: $data['method'] ?? null,
-            reference: $data['reference'] ?? null,
-            createdAt: $data['created_at'] ?? null,
-            completedAt: $data['completed_at'] ?? null,
-            customer: $data['customer'] ?? null,
+            paymentId: is_scalar($paymentId) ? (string) $paymentId : '',
+            token: is_scalar($token) ? (string) $token : '',
+            checkoutUrl: is_scalar($checkoutUrl) ? (string) $checkoutUrl : '',
+            status: PaymentStatus::from(is_scalar($status) ? (string) $status : 'pending'),
+            trxId: is_scalar($trxId) ? (string) $trxId : null,
+            gatewayTrxId: is_scalar($gatewayTrxId) ? (string) $gatewayTrxId : null,
+            amount: is_scalar($amount) ? (string) $amount : null,
+            currency: is_scalar($currency) ? (string) $currency : null,
+            fee: is_scalar($fee) ? (string) $fee : null,
+            gateway: is_scalar($gateway) ? (string) $gateway : null,
+            method: is_scalar($method) ? (string) $method : null,
+            reference: is_scalar($reference) ? (string) $reference : null,
+            createdAt: is_scalar($createdAt) ? (string) $createdAt : null,
+            completedAt: is_scalar($completedAt) ? (string) $completedAt : null,
+            customer: $customer,
         );
     }
 
@@ -151,7 +187,7 @@ final readonly class Payment
             'created_at' => $this->createdAt,
             'completed_at' => $this->completedAt,
             'customer' => $this->customer,
-        ], fn (mixed $value) => $value !== null);
+        ], static fn (mixed $value): bool => $value !== null);
     }
 
     /**

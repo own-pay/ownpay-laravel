@@ -15,7 +15,7 @@ final readonly class Money
     /**
      * Create a new Money instance.
      *
-     * @param  string  $amount  The monetary amount as a string (e.g., "100.00").
+     * @param  numeric-string  $amount  The monetary amount as a string (e.g., "100.00").
      * @param  string  $currency  The ISO 4217 currency code (e.g., "USD", "BDT").
      */
     public function __construct(
@@ -23,14 +23,14 @@ final readonly class Money
         public string $currency,
     ) {
         // Validate amount format
-        if (!preg_match('/^\d+(\.\d{1,2})?$/', $amount)) {
+        if (! preg_match('/^\d+(\.\d{1,2})?$/', $amount)) {
             throw new \InvalidArgumentException(
                 "Invalid amount format: '{$amount}'. Must be a positive number with up to 2 decimal places."
             );
         }
 
         // Validate currency code
-        if (!preg_match('/^[A-Z]{3}$/', $currency)) {
+        if (! preg_match('/^[A-Z]{3}$/', $currency)) {
             throw new \InvalidArgumentException(
                 "Invalid currency code: '{$currency}'. Must be a 3-letter uppercase ISO 4217 code."
             );
@@ -42,15 +42,16 @@ final readonly class Money
      *
      * @param  float  $amount  The monetary amount.
      * @param  string  $currency  The ISO 4217 currency code.
-     * @return static
      */
-    public static function fromFloat(float $amount, string $currency): static
+    public static function fromFloat(float $amount, string $currency): self
     {
         if ($amount < 0) {
             throw new \InvalidArgumentException("Amount must be non-negative, got: {$amount}");
         }
 
-        return new static(number_format($amount, 2, '.', ''), strtoupper($currency));
+        $formatted = number_format($amount, 2, '.', '');
+
+        return new self($formatted, strtoupper($currency));
     }
 
     /**
@@ -59,9 +60,8 @@ final readonly class Money
      * @param  int  $cents  The amount in cents/smallest currency unit.
      * @param  string  $currency  The ISO 4217 currency code.
      * @param  int  $decimalPlaces  The number of decimal places for the currency (default: 2).
-     * @return static
      */
-    public static function fromCents(int $cents, string $currency, int $decimalPlaces = 2): static
+    public static function fromCents(int $cents, string $currency, int $decimalPlaces = 2): self
     {
         if ($cents < 0) {
             throw new \InvalidArgumentException("Cents must be non-negative, got: {$cents}");
@@ -69,7 +69,9 @@ final readonly class Money
 
         $divisor = pow(10, $decimalPlaces);
 
-        return new static(number_format($cents / $divisor, $decimalPlaces, '.', ''), strtoupper($currency));
+        $formatted = number_format($cents / $divisor, $decimalPlaces, '.', '');
+
+        return new self($formatted, strtoupper($currency));
     }
 
     /**
@@ -87,7 +89,10 @@ final readonly class Money
      */
     public function toCents(int $decimalPlaces = 2): int
     {
-        return (int) bcmul($this->amount, (string) pow(10, $decimalPlaces));
+        /** @var numeric-string $multiplier */
+        $multiplier = (string) pow(10, $decimalPlaces);
+
+        return (int) bcmul($this->amount, $multiplier, 0);
     }
 
     /**
@@ -110,39 +115,41 @@ final readonly class Money
      * Add another Money instance.
      *
      * @param  Money  $other  The Money to add.
-     * @return static
      */
-    public function add(Money $other): static
+    public function add(Money $other): self
     {
         $this->assertSameCurrency($other);
 
-        return new static(bcadd($this->amount, $other->amount, 2), $this->currency);
+        /** @var numeric-string $result */
+        $result = bcadd($this->amount, $other->amount, 2);
+
+        return new self($result, $this->currency);
     }
 
     /**
      * Subtract another Money instance.
      *
      * @param  Money  $other  The Money to subtract.
-     * @return static
      */
-    public function subtract(Money $other): static
+    public function subtract(Money $other): self
     {
         $this->assertSameCurrency($other);
 
+        /** @var numeric-string $result */
         $result = bcsub($this->amount, $other->amount, 2);
 
         if (bccomp($result, '0', 2) < 0) {
             throw new \InvalidArgumentException('Subtraction would result in a negative amount.');
         }
 
-        return new static($result, $this->currency);
+        return new self($result, $this->currency);
     }
 
     /**
      * Compare with another Money instance.
      *
      * @param  Money  $other  The Money to compare with.
-     * @return int  -1 if less, 0 if equal, 1 if greater.
+     * @return int -1 if less, 0 if equal, 1 if greater.
      */
     public function compare(Money $other): int
     {
@@ -198,6 +205,8 @@ final readonly class Money
 
     /**
      * Get the JSON serialization.
+     *
+     * @return array{amount: string, currency: string}
      */
     public function jsonSerialize(): array
     {

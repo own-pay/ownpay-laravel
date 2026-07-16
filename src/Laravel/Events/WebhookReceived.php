@@ -30,7 +30,10 @@ class WebhookReceived
      */
     public function getTransactionId(): ?string
     {
-        return $this->payload['transaction_id'] ?? null;
+        /** @var mixed $value */
+        $value = $this->payload['transaction_id'] ?? null;
+
+        return is_string($value) ? $value : null;
     }
 
     /**
@@ -38,7 +41,10 @@ class WebhookReceived
      */
     public function getGatewayTransactionId(): ?string
     {
-        return $this->payload['gateway_trx_id'] ?? null;
+        /** @var mixed $value */
+        $value = $this->payload['gateway_trx_id'] ?? null;
+
+        return is_string($value) ? $value : null;
     }
 
     /**
@@ -46,7 +52,10 @@ class WebhookReceived
      */
     public function getStatus(): ?string
     {
-        return $this->payload['status'] ?? null;
+        /** @var mixed $value */
+        $value = $this->payload['status'] ?? null;
+
+        return is_string($value) ? $value : null;
     }
 
     /**
@@ -54,7 +63,10 @@ class WebhookReceived
      */
     public function getAmount(): ?string
     {
-        return $this->payload['amount'] ?? null;
+        /** @var mixed $value */
+        $value = $this->payload['amount'] ?? null;
+
+        return is_string($value) ? $value : null;
     }
 
     /**
@@ -62,7 +74,10 @@ class WebhookReceived
      */
     public function getCurrency(): ?string
     {
-        return $this->payload['currency'] ?? null;
+        /** @var mixed $value */
+        $value = $this->payload['currency'] ?? null;
+
+        return is_string($value) ? $value : null;
     }
 
     /**
@@ -70,23 +85,46 @@ class WebhookReceived
      */
     public function getGateway(): ?string
     {
-        return $this->payload['gateway'] ?? null;
+        /** @var mixed $value */
+        $value = $this->payload['gateway'] ?? null;
+
+        return is_string($value) ? $value : null;
     }
 
     /**
      * Get the customer info from the payload.
+     *
+     * @return array{name: string, email: string, phone: string}|null
      */
     public function getCustomer(): ?array
     {
-        return $this->payload['customer'] ?? null;
+        /** @var mixed $customer */
+        $customer = $this->payload['customer'] ?? null;
+
+        if (! is_array($customer)) {
+            return null;
+        }
+
+        /** @var array{name: string, email: string, phone: string} $customer */
+        return $customer;
     }
 
     /**
      * Get the metadata from the payload.
+     *
+     * @return array<string, mixed>|null
      */
     public function getMetadata(): ?array
     {
-        return $this->payload['metadata'] ?? null;
+        /** @var mixed $metadata */
+        $metadata = $this->payload['metadata'] ?? null;
+
+        if (! is_array($metadata)) {
+            return null;
+        }
+
+        /** @var array<string, mixed> $metadata */
+        return $metadata;
     }
 
     /**
